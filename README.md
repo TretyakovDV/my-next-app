@@ -1,34 +1,79 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+[APP LINK](http://my-next-app.s3-website.us-east-2.amazonaws.com/)
 
-## Getting Started
+# Deploy to AWS S3 checklist
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
+1. In the `package.json` file, change build script
+```
+"build": "next build && next export",
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Create S3 bucket
+    - go to aws management console
+    - in the search field to find `s3`
+    - create a new bucket
+    - in the properties tab enable `static web site hosting`
+    - in the permissions tab `Block all public access` must be off
+    - in the `bucket policy` add 
+   ```
+   {
+      "Version":"2012-10-17",
+      "Statement":[
+         {
+            "Sid":"PublicReadGetObject",
+            "Effect":"Allow",
+            "Principal": "*",
+            "Action":["s3:GetObject"],
+            "Resource":"arn:aws:s3:::<bucket name>/*"
+         }
+      ]
+   }
+   ```
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+2. GitHub actions
+   
+   [versions issues](https://github.com/actions/virtual-environments/issues/1816)
+   - go to the `set up a workflow yourself ->`
+   - name it `deploy.yml`
+   - add
+     
+     `aws-region: us-east-1` or region selected in created bucket
+   ```
+   name: Deploy
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+   on:
+      push:
+         branches: [ main ]
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+   jobs:
+      build:
+         runs-on: ubuntu-latest
 
-## Learn More
+         steps:
+           - uses: actions/checkout@v2
+           - uses: actions/setup-node@v1
+             with:
+               node-version: 14.16.0
+           - run: npm install -g yarn
+           - run: yarn install --frozen-lockfile
+           - run: yarn build
+            
+           - uses: aws-actions/configure-aws-credentials@v1
+             with:
+               aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+               aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+               aws-region: us-east-2
+           - run: aws s3 sync ./out s3://<bucket name>
+   ```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+3. Create security credentials
+   - in the AWS Management Console in a header, click on your username
+   - go to `My Security Credentials`
+   - in a `Access keys` section click on `Create New Access Key`
+   
+     IMPORTANT!!! Download Key File
+   
+4. Add secret
+   - in the github repository go to a Settings > Secrets
+   - add repository secret
+     
+     `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` with value from downloaded file
