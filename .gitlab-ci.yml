@@ -4,3 +4,14 @@ build-job:
   script:
     - yarn install --frozen-lockfile
     - yarn build
+
+variables:
+  S3_BUCKET_NAME: "my-next-app"
+
+deploy:
+  stage: deploy
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  script:
+  - aws s3 cp ./out s3://$S3_BUCKET_NAME/
+  only:
+  - main
