@@ -1,7 +1,7 @@
 build-job:
   stage: build
   services:
-     - node:14.16.0
+     - node:14
   image: alpine:3.7
   script:
     - npm install -g yarn
