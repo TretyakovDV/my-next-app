@@ -1,7 +1,6 @@
 build-job:
   stage: build
-  image: node:latest
+  image: node:14.16.0
   script:
-    - npm install -g yarn
     - yarn install --frozen-lockfile
     - yarn build
