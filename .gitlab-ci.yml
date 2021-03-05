@@ -1,7 +1,8 @@
 variables:
   S3_BUCKET_NAME: "my-next-app"
 
-build-job:
+build:
+  stage: build
   image: node:14.16.0
   script:
     - yarn install --frozen-lockfile
@@ -9,6 +10,7 @@ build-job:
 
 
 deploy:
+  stage: deploy
   image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
   script:
   - ls
