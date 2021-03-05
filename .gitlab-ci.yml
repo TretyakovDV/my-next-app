@@ -21,6 +21,7 @@ deploy:
     - build
   image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
   script:
-  - ls
+    - aws configure set region us-east-2
+    - aws s3 cp ./out s3://$S3_BUCKET_NAME/
   only:
   - main
