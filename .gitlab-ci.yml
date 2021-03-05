@@ -1,8 +1,8 @@
 build-job:
   stage: build
   services:
-     - node:14
-  image: alpine:3.7
+    - node:latest
+  image: alpine:3.11
   script:
     - npm install -g yarn
     - yarn install --frozen-lockfile
