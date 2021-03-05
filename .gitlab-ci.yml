@@ -1,0 +1,27 @@
+variables:
+  S3_BUCKET_NAME: "my-next-app"
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  image: node:14.16.0
+  script:
+    - yarn install --frozen-lockfile
+    - yarn build
+  artifacts:
+    paths:
+    - ./out
+    
+deploy:
+  stage: deploy
+  dependencies: 
+    - build
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  script:
+    - aws configure set region us-east-2
+    - aws s3 sync ./out s3://$S3_BUCKET_NAME
+  only:
+  - main
