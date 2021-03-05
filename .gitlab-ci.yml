@@ -1,13 +1,16 @@
 variables:
   S3_BUCKET_NAME: "my-next-app"
 
+stages:
+  - build
+  - deploy
+
 build:
   stage: build
   image: node:14.16.0
   script:
     - yarn install --frozen-lockfile
     - yarn build
-
 
 deploy:
   stage: deploy
