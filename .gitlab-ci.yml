@@ -14,6 +14,8 @@ build:
 
 deploy:
   stage: deploy
+  dependencies: 
+    - build
   image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
   script:
   - ls
