@@ -11,7 +11,10 @@ build:
   script:
     - yarn install --frozen-lockfile
     - yarn build
-
+  artifacts:
+    paths:
+    - ./out
+    
 deploy:
   stage: deploy
   dependencies: 
