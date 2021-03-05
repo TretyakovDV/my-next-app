@@ -11,7 +11,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to test app
+          The first title means that this app deployed from github actions
         </h1>
 
         <p className={styles.description}>
