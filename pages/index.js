@@ -13,6 +13,9 @@ export default function Home() {
         <h1 className={styles.title}>
           The first title means that this app deployed from github actions
         </h1>
+        <h1 className={styles.title}>
+          The second title means that this app deployed from gitlab CI
+        </h1>
 
         <p className={styles.description}>
           Get started by editing{' '}
